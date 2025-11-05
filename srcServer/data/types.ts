@@ -31,3 +31,7 @@ export interface NewMessage {
     sender: string;
     receiver?: string;
 }
+
+export interface JwtPayload {
+    userId: string;
+}
