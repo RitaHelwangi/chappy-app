@@ -25,9 +25,8 @@ app.get('/api/messages/:channelId', (req, res) => {
 	res.json({ message: 'Get messages endpoint' })
 })
 
-app.post('/api/register', (req, res) => {
-	res.json({ message: 'Register endpoint' })
-})
+import registerRoute from './routes/register.js'
+app.use('/api/register', registerRoute)
 
 app.post('/api/login', (req, res) => {
 	res.json({ message: 'Login endpoint' })

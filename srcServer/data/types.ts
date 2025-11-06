@@ -35,3 +35,13 @@ export interface NewMessage {
 export interface JwtPayload {
     userId: string;
 }
+
+export interface UserBody {
+    username: string;
+    password: string;
+}
+
+export interface JwtResponse {
+    success: boolean;
+    token?: string;
+}
