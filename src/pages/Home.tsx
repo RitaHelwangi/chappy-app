@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router'
 import { Button } from '../components/Button'
 import { Input } from '../components/Input'
 
+const LS_KEY = 'chappy-token'
+
 export function HomePage() {
 	const navigate = useNavigate()
 
@@ -43,8 +45,10 @@ export function LoginPage() {
 				console.log(`✅ User logged in successfully: ${username}`)
 				console.log(`🎟️ Token received: ${result.token}`)
 	
+				const jwt: string = result.token
+				localStorage.setItem(LS_KEY, jwt)
+				
 				form.reset()
-				// TODO: Store token and redirect to chat
 			} else {
 				const errorMsg = result.error || 'Login failed'
 				console.error(`❌ Login failed: ${errorMsg}`)
@@ -92,7 +96,10 @@ export function RegisterPage() {
 			
 			if (result.success) {
 				console.log(`✅ User registered successfully: ${username}`)
-				// Clear the form
+				
+				const jwt: string = result.token
+				localStorage.setItem(LS_KEY, jwt)
+				
 				form.reset()
 			} else {
 				const errorMsg = result.error || 'Registration failed'
