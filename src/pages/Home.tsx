@@ -15,6 +15,8 @@ export function HomePage() {
 				<Button onClick={() => navigate('/login')}>Login</Button>
 				{' | '}
 				<Button onClick={() => navigate('/register')}>Register</Button>
+				{' | '}
+				<Button onClick={() => navigate('/channels')}>View Channels</Button>
 			</nav>
 		</div>
 	)

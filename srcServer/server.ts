@@ -17,9 +17,8 @@ app.get('/api/exempel', (req, res) => {
 
 
 // endpoints
-app.get('/api/channels', (req, res) => {
-	res.json({ message: 'Get channels endpoint' })
-})
+import channelRoute from './routes/channel.js'
+app.use('/api/channels', channelRoute)
 
 app.get('/api/messages/:channelId', (req, res) => {
 	res.json({ message: 'Get messages endpoint' })
