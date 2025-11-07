@@ -1,8 +1,5 @@
-interface InputProps {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	type?: 'text' | 'password' | 'email'
-	name?: string
-	placeholder?: string
-	required?: boolean
 }
 
 export const Input = ({ type = 'text', ...props }: InputProps) => (

@@ -20,9 +20,8 @@ app.get('/api/exempel', (req, res) => {
 import channelRoute from './routes/channel.js'
 app.use('/api/channels', channelRoute)
 
-app.get('/api/messages/:channelId', (req, res) => {
-	res.json({ message: 'Get messages endpoint' })
-})
+import chatRoute from './routes/chat.js'
+app.use('/api/messages', chatRoute)
 
 import registerRoute from './routes/register.js'
 app.use('/api/register', registerRoute)
@@ -30,9 +29,6 @@ app.use('/api/register', registerRoute)
 import loginRoute from './routes/login.js'
 app.use('/api/login', loginRoute)
 
-app.post('/api/messages', (req, res) => {
-	res.json({ message: 'Send message endpoint' })
-})
 
 app.use(express.static('./dist/'))
 

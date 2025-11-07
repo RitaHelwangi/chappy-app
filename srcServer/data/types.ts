@@ -40,3 +40,27 @@ export interface JwtResponse {
         username: string;
     };
 }
+
+export interface MessagesResponse {
+    success: boolean;
+    messages?: {
+        id: string;
+        sender: string;
+        text: string;
+        time: string;
+        channelId: string;
+    }[];
+    error?: string;
+}
+
+export interface MessageResponse {
+    success: boolean;
+    message?: {
+        id: string;
+        sender: string;
+        text: string;
+        time: string;
+        channelId: string;
+    };
+    error?: string;
+}

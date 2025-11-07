@@ -1,9 +1,6 @@
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	children: React.ReactNode
 	loading?: boolean
-	disabled?: boolean
-	type?: 'button' | 'submit' | 'reset'
-	onClick?: () => void
 }
 
 export const Button = ({ children, loading, disabled, type = 'button', ...props }: ButtonProps) => (

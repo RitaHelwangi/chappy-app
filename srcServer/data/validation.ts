@@ -16,6 +16,11 @@ export const loginSchema = z.object({
 	password: z.string().min(1, 'Password is required')
 })
 
+export const sendMessageSchema = z.object({
+	channelId: z.string().min(1, 'Channel ID is required').max(50, 'Channel ID too long'),
+	text: z.string().min(1, 'Message cannot be empty').max(1000, 'Message too long'),
+})
+
 export const validateInput = <T>(schema: z.ZodSchema<T>, data: unknown): 
 | { success: true; data: T }
 | { success: false; error: string } => {

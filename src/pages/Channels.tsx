@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Button } from '../components/Button'
+import { Link } from 'react-router'
 import type { Channel } from '../data/types'
 
 export function ChannelsPage() {
@@ -8,67 +8,41 @@ export function ChannelsPage() {
 	const [error, setError] = useState('')
 
 	useEffect(() => {
-		const fetchChannels = async () => {
+		const getAllChannels = async () => {
+			setLoading(true)
 			try {
-				setLoading(true)
-				const res = await fetch('/api/channels')
-				const result = await res.json()
+				const response: Response = await fetch('/api/channels')
+				const data = await response.json()
 				
-				if (result.success) {
-					setChannels(result.channels)
-					console.log(`Loaded ${result.channels.length} channels:`, result.channels)
+				if (data.success) {
+					setChannels(data.channels)
 				} else {
-					setError(result.error || 'Failed to load channels')
+					setError(data.error || 'Failed to load channels')
 				}
 			} catch (err) {
 				setError('Connection error')
-				console.error(' Failed to fetch channels:', err)
 			} finally {
 				setLoading(false)
 			}
 		}
 
-		fetchChannels()
+		getAllChannels()
 	}, [])
 
-	const handleJoinChannel = (channelId: string) => {
-		console.log(`Joining channel: ${channelId}`)
-		// TODO: implement join logic
-	}
-
-	if (loading) {
-		return (
-			<div>
-				<h2>Channels</h2>
-				<p>Loading channels...</p>
-			</div>
-		)
-	}
-
-	if (error) {
-		return (
-			<div>
-				<h2>Channels</h2>
-				<p style={{ color: 'red', textDecoration: 'underline' }}>{error}</p>
-			</div>
-		)
-	}
+	if (loading) return <div>Loading channels...</div>
+	if (error) return <div>Error: {error}</div>
 
 	return (
 		<div>
 			<h2>Channels</h2>
-			<p>Available channels:</p>
-			
 			{channels.length === 0 ? (
 				<p>No channels found.</p>
 			) : (
 				channels.map(channel => (
-					<div key={channel.id} style={{ marginBottom: '15px', padding: '10px', border: '1px solid #ddd' }}>
-						<h3>{channel.name}</h3>
-						<p>{channel.isLocked ? '🔒 Locked' : '🔓 Open'}</p>
-						<Button onClick={() => handleJoinChannel(channel.id)}>
-							Join {channel.name}
-						</Button>
+					<div key={channel.id}>
+						<Link to={`/chat/${channel.id}`}>
+							#{channel.name}
+						</Link>
 					</div>
 				))
 			)}
