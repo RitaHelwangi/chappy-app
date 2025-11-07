@@ -3,7 +3,8 @@ import type { Request, Response } from 'express'
 import { QueryCommand, PutCommand } from '@aws-sdk/lib-dynamodb'
 import { db, tableName } from '../data/dynamoDB.js'
 import { validateInput, sendMessageSchema } from '../data/validation.js'
-import type { MessagesResponse, MessageResponse } from '../data/types.js'
+import { verifyToken } from '../data/auth.js'
+import type { MessagesResponse, MessageResponse, JwtPayload } from '../data/types.js'
 
 const router = Router()
 
@@ -47,7 +48,7 @@ router.get('/:channelId', async (req: Request, res: Response<MessagesResponse>) 
 	}
 })
 
-router.post('/', async (req: Request, res: Response<MessageResponse>) => {
+router.post('/', verifyToken, async (req: Request, res: Response<MessageResponse>) => {
 	try {
 		const validation = validateInput(sendMessageSchema, req.body)
 		
@@ -59,7 +60,10 @@ router.post('/', async (req: Request, res: Response<MessageResponse>) => {
 		}
 
 		const { channelId, text } = validation.data as { channelId: string; text: string }
-		const sender = 'currentUser' // TODO: Get from JWT token
+		
+		// Get username from JWT token
+		const { username } = (req as any).user as JwtPayload
+		const sender = username
 		const messageId = `MSG#${Date.now()}`
 		const timestamp = new Date().toISOString()
 

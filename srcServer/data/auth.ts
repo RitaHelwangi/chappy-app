@@ -4,8 +4,8 @@ import type { JwtPayload } from './types.js'
 
 const jwtSecret: string = process.env.JWT_SECRET || ''
 
-function createToken (userId: string): string {
-	const token = jwt.sign({ userId }, jwtSecret, { expiresIn: '7d' })
+function createToken (userId: string, username: string): string {
+	const token = jwt.sign({ userId, username }, jwtSecret, { expiresIn: '7d' })
 	return token
 }
 

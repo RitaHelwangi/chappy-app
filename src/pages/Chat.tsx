@@ -38,11 +38,18 @@ function Chat() {
     const sendMessage = async () => {
         if (!newMessage.trim() || !channelId) return
 
+        const token = localStorage.getItem('chappy-token')
+        if (!token) {
+            setError('Please log in to send messages')
+            return
+        }
+
         try {
             const response: Response = await fetch('/api/messages', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     channelId,

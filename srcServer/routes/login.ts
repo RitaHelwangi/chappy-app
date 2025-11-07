@@ -50,9 +50,9 @@ router.post('/', async (req: Request, res: Response) => {
 		}
 
 		const userId = user.userId || user.pk.replace('USER#', '')  
-		const token = createToken(userId)
+		const token = createToken(userId, username)
 
-		console.log(`✅ User logged in: ${username} (ID: ${userId})`)
+		console.log(`User logged in: ${username} (ID: ${userId})`)
 
 		return res.json({
 			success: true,

@@ -41,7 +41,7 @@ router.post('/', async (req: Request, res: Response) => {
 		await db.send(putCommand)
 
 		
-		const token = createToken(userId)
+		const token = createToken(userId, username)
 
 		console.log(`✅ User registered: ${username} (ID: ${userId})`)
 
