@@ -1,7 +1,7 @@
 import "./App.css";
 import { RouterProvider, Outlet } from "react-router";
 import { createHashRouter } from "react-router";
-import { HomePage, RegisterPage } from "./pages/Home.tsx";
+import { HomePage, LoginPage, RegisterPage } from "./pages/Home.tsx";
 
 function Layout() {
 	return (
@@ -22,6 +22,7 @@ const router = createHashRouter([
 		element: <Layout />,
 		children: [
 			{ index: true, element: <HomePage /> },
+			{ path: "login", element: <LoginPage /> },
 			{ path: "register", element: <RegisterPage /> }
 		]
 	}

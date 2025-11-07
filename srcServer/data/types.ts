@@ -1,6 +1,7 @@
 export interface User {
     pk: string;        
-    sk: string;         
+    sk: string;
+    userId?: string;    
     name: string;      
     password: string;  
 }

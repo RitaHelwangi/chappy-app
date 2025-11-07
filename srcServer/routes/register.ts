@@ -4,29 +4,33 @@ import { PutCommand } from '@aws-sdk/lib-dynamodb'
 import { db, tableName } from '../data/dynamoDB.js'
 import { createToken } from '../data/auth.js'
 import type { User } from '../data/types.js'
+import { registerSchema, validateInput } from '../data/validation.js'
+import bcrypt from 'bcrypt'
 
 const router = Router()
 
 router.post('/', async (req: Request, res: Response) => {
-	try { //todo: validation
-		const { username, password } = req.body
-
-		if (!username || !password) {
+	try {
+		const validation = validateInput(registerSchema, req.body)
+		
+		if (!validation.success) {
 			return res.status(400).json({
 				success: false,
-				error: 'Username and password are required'
+				error: validation.error
 			})
 		}
 
+		const { username, password } = validation.data
 
+		const hashedPassword = await bcrypt.hash(password, 10)
 		const userId = Date.now().toString()
-
 	
 		const user: User = {
-			pk: `USER#${userId}`,
-			sk: `USER#${userId}`,
+			pk: `USER#${username}`, 
+			sk: 'PROFILE',          
+			userId: userId,         
 			name: username,
-			password //todo: hash password
+			password: hashedPassword
 		}
 
 		const putCommand = new PutCommand({
