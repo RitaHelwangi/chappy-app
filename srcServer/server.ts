@@ -32,6 +32,9 @@ app.use('/api/login', loginRoute)
 import usersRoute from './routes/users.js'
 app.use('/api/users', usersRoute)
 
+import dmRoute from './routes/dm.js'
+app.use('/api/dm', dmRoute)
+
 
 app.use(express.static('./dist/'))
 

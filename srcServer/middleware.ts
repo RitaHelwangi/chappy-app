@@ -29,11 +29,13 @@ const checkChannelAccess = async (req: Request, res: Response, next: any) => {
 	try {
 		const { channelId } = req.body
 		
+		// Query for channel metadata (not messages)
 		const channelQuery = new QueryCommand({
 			TableName: tableName,
-			KeyConditionExpression: 'pk = :channelPk',
+			KeyConditionExpression: 'pk = :channelPk AND sk = :channelSk',
 			ExpressionAttributeValues: {
-				':channelPk': `CHANNEL#${channelId}`
+				':channelPk': 'CHANNEL',
+				':channelSk': channelId
 			}
 		})
 		
@@ -41,13 +43,23 @@ const checkChannelAccess = async (req: Request, res: Response, next: any) => {
 		const channel = result.Items?.[0]
 		const isPrivateChannel = channel?.isLocked || false
 		
-		if (isPrivateChannel) {
-			return verifyToken(req, res, next)
-		}
+		// Debug logging
+		console.log(`Channel check for ${channelId}:`, {
+			channel: channel,
+			isLocked: channel?.isLocked,
+			isPrivateChannel: isPrivateChannel
+		})
 		
 		const authHeader = req.headers["authorization"]
 		const token = authHeader?.split(" ")[1]
 		
+		if (isPrivateChannel) {
+			if (!token) {
+				return res.status(401).json({ error: "Access denied. Authentication required for private channels." })
+			}
+			return verifyToken(req, res, next)
+		}
+
 		if (token) {
 			return verifyToken(req, res, next)
 		}

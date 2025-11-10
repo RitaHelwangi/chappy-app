@@ -6,6 +6,12 @@ export function ChannelsPage() {
 	const [channels, setChannels] = useState<Channel[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState('')
+	const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+	useEffect(() => {
+		const token = localStorage.getItem('chappy-token')
+		setIsAuthenticated(!!token)
+	}, [])
 
 	useEffect(() => {
 		const getAllChannels = async () => {
@@ -39,10 +45,16 @@ export function ChannelsPage() {
 				<p>No channels found.</p>
 			) : (
 				channels.map(channel => (
-					<div key={channel.id}>
-						<Link to={`/chat/${channel.id}`}>
-							#{channel.name}
-						</Link>
+					<div key={channel.id} style={{ marginBottom: '0.5rem' }}>
+						{channel.isLocked && !isAuthenticated ? (
+							<div>
+								🔒 #{channel.name} | <span style={{ color: '#666' }}>This is a private channel. <Link to="/login">Please log in</Link> to view messages.</span>
+							</div>
+						) : (
+							<Link to={`/chat/${channel.id}`}>
+								{channel.isLocked ? '🔒' : '🔓'} #{channel.name}
+							</Link>
+						)}
 					</div>
 				))
 			)}

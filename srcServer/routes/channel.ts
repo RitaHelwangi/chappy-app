@@ -7,15 +7,11 @@ const router = Router()
 
 router.get('/', async (req: Request, res: Response) => {
 	try {
-		const queryCommand = new QueryCommand({
+		const result = await db.send(new QueryCommand({
 			TableName: tableName,
 			KeyConditionExpression: 'pk = :pk',
-			ExpressionAttributeValues: {
-				':pk': 'CHANNEL'
-			}
-		})
-
-		const result = await db.send(queryCommand)
+			ExpressionAttributeValues: { ':pk': 'CHANNEL' }
+		}))
 		
 		const channels = result.Items?.map(item => ({
 			id: item.sk, 
@@ -23,19 +19,14 @@ router.get('/', async (req: Request, res: Response) => {
 			isLocked: item.isLocked || false
 		})) || []
 
-		console.log(`Retrieved ${channels.length} channels`)
+		console.log(`Retrieved ${channels.length} channels:`, channels)
+		console.log('Raw channel data:', result.Items)
 
-		return res.json({
-			success: true,
-			channels
-		})
+		return res.json({ success: true, channels })
 
 	} catch (error) {
 		console.error('Get channels error:', error)
-		return res.status(500).json({
-			success: false,
-			error: 'Failed to get channels'
-		})
+		return res.status(500).json({ success: false, error: 'Failed to get channels' })
 	}
 })
 

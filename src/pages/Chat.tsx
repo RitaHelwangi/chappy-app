@@ -23,17 +23,24 @@ function Chat() {
 
         const getMessages = async () => {
             setLoading(true)
+            const token = localStorage.getItem('chappy-token')
+            const headers: Record<string, string> = {}
+            if (token) headers['Authorization'] = `Bearer ${token}`
+
             try {
-                const response: Response = await fetch(`/api/messages/${channelId}`)
+                const response = await fetch(`/api/messages/${channelId}`, { headers })
                 const data = await response.json()
 
                 if (data.success) {
                     setMessages(data.messages)
                     setIsPrivateChannel(data.channel?.isPrivate || false)
+                } else if (response.status === 401 || response.status === 403) {
+                    setIsPrivateChannel(true)
+                    setMessages([])
                 } else {
                     setError(data.error || 'Failed to load messages')
                 }
-            } catch (err) {
+            } catch {
                 setError('Failed to connect to server')
             } finally {
                 setLoading(false)
@@ -45,19 +52,14 @@ function Chat() {
 
     const sendMessage = async () => {
         if (!newMessage.trim() || !channelId) return
+        if (isPrivateChannel && !isAuthenticated) return
 
         const token = localStorage.getItem('chappy-token')
-        
-        if (isPrivateChannel && !token) {
-            setError('Please log in to send messages in private channels')
-            return
-        }
-
         const headers: Record<string, string> = { 'Content-Type': 'application/json' }
         if (token) headers['Authorization'] = `Bearer ${token}`
 
         try {
-            const response: Response = await fetch('/api/messages', {
+            const response = await fetch('/api/messages', {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({ channelId, text: newMessage.trim() })
@@ -70,7 +72,7 @@ function Chat() {
             } else {
                 setError(data.error || 'Failed to send message')
             }
-        } catch (err) {
+        } catch {
             setError('Failed to send message')
         }
     }
@@ -82,19 +84,30 @@ function Chat() {
         }
     }
 
+    const renderInputArea = (enabled: boolean, placeholder: string) => (
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <Input
+                placeholder={placeholder}
+                value={enabled ? newMessage : ''}
+                onChange={enabled ? (e) => setNewMessage(e.target.value) : undefined}
+                onKeyPress={enabled ? handleKeyPress : undefined}
+                disabled={!enabled}
+                style={{ flex: 1, backgroundColor: enabled ? '' : '#f5f5f5', color: enabled ? '' : '#666' }}
+            />
+            <Button 
+                onClick={enabled ? sendMessage : undefined} 
+                disabled={!enabled || !newMessage.trim()}
+                style={enabled ? {} : { backgroundColor: '#ccc', color: '#666' }}
+            >
+                {enabled ? 'Send' : <Link to="/login" style={{ color: 'inherit', textDecoration: 'none' }}>Login</Link>}
+            </Button>
+        </div>
+    )
+
     if (loading) return <div>Loading...</div>
     if (error) return <div>Error: {error}</div>
 
-    if (isPrivateChannel && !isAuthenticated) {
-        return (
-            <div>
-                <h2>🔒 #{channelId}</h2>
-                <p>This is a private channel. Please <Link to="/login">log in</Link> to access.</p>
-            </div>
-        )
-    }
 
-    const canSendMessages = isPrivateChannel ? isAuthenticated : true
 
     return (
         <div>
@@ -116,22 +129,7 @@ function Chat() {
                 )}
             </div>
 
-            {canSendMessages ? (
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <Input
-                        placeholder="Type your message..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        style={{ flex: 1 }}
-                    />
-                    <Button onClick={sendMessage} disabled={!newMessage.trim()}>
-                        Send
-                    </Button>
-                </div>
-            ) : (
-                <p>Please <Link to="/login">log in</Link> to send messages in this private channel.</p>
-            )}
+            {renderInputArea(isPrivateChannel ? isAuthenticated : true, isAuthenticated ? 'Type your message...' : 'Login to send messages')}
         </div>
     )
 }
