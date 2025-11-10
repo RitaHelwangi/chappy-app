@@ -5,6 +5,7 @@ import { HomePage, LoginPage, RegisterPage } from "./pages/Home.tsx";
 import { ChannelsPage } from "./pages/Channels.tsx";
 import { UsersPage } from "./pages/Users.tsx";
 import Chat from "./pages/Chat.tsx";
+import { DMPage } from "./pages/DM.tsx";
 
 function Layout() {
 	return (
@@ -29,7 +30,8 @@ const router = createHashRouter([
 			{ path: "register", element: <RegisterPage /> },
 			{ path: "channels", element: <ChannelsPage /> },
 			{ path: "users", element: <UsersPage /> },
-			{ path: "chat/:channelId", element: <Chat /> }
+			{ path: "chat/:channelId", element: <Chat /> },
+			{ path: "dm/:username", element: <DMPage /> }
 		]
 	}
 ])

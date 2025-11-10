@@ -3,7 +3,7 @@ import { QueryCommand } from '@aws-sdk/lib-dynamodb'
 import { db, tableName } from './data/dynamoDB.js'
 import jwt from 'jsonwebtoken';
 import type { NextFunction } from "express";
-const jwtSecret: string = process.env.JWT_SECRET || '';
+const jwtSecret: string = process.env.JWT_SECRET || 'secret';
 
 function verifyToken(req: Request, res: Response, next: NextFunction) {
 	const authHeader = req.headers["authorization"];

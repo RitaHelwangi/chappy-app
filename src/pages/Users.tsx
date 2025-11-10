@@ -6,32 +6,40 @@ interface User {
 	username: string
 }
 
+function getCurrentUsername(): string {
+	const token = localStorage.getItem('chappy-token')
+	if (!token) return ''
+	
+	try {
+		return JSON.parse(atob(token.split('.')[1])).username || ''
+	} catch {
+		return ''
+	}
+}
+
 export function UsersPage() {
 	const [users, setUsers] = useState<User[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState('')
+	const currentUsername = getCurrentUsername()
+	const isLoggedIn = !!currentUsername
 
 	useEffect(() => {
-		const getAllUsers = async () => {
-			setLoading(true)
-			try {
-				const response: Response = await fetch('/api/users')
-				const data = await response.json()
-				
+		fetch('/api/users')
+			.then(res => res.json())
+			.then(data => {
 				if (data.success) {
-					setUsers(data.users)
+					const filteredUsers = isLoggedIn 
+						? data.users.filter((user: User) => user.username !== currentUsername)
+						: data.users
+					setUsers(filteredUsers)
 				} else {
 					setError(data.error || 'Failed to load users')
 				}
-			} catch (err) {
-				setError('Connection error')
-			} finally {
-				setLoading(false)
-			}
-		}
-
-		getAllUsers()
-	}, [])
+			})
+			.catch(() => setError('Connection error'))
+			.finally(() => setLoading(false))
+	}, [currentUsername, isLoggedIn])
 
 	if (loading) return <div>Loading users...</div>
 	if (error) return <div>Error: {error}</div>
@@ -40,13 +48,15 @@ export function UsersPage() {
 		<div>
 			<h2>Users</h2>
 			{users.length === 0 ? (
-				<p>No users found.</p>
+				<p>No users available.</p>
 			) : (
 				users.map(user => (
-					<div key={user.id}>
-						<Link to={`/user/${user.username}`}>
-							@{user.username}
-						</Link>
+					<div key={user.id} style={{ marginBottom: '0.5rem' }}>
+						@{user.username} | {isLoggedIn ? (
+							<Link to={`/dm/${user.username}`}>Send DM</Link>
+						) : (
+							<span style={{ color: '#666' }}>Login to send DM</span>
+						)}
 					</div>
 				))
 			)}
