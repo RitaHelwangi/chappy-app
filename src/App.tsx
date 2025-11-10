@@ -10,10 +10,7 @@ import { DMPage } from "./pages/DM.tsx";
 function Layout() {
 	return (
 		<div className="app-container">
-			<header>
-				<h1>Chappy</h1>
-			</header>
-			<main>
+			<main className="main-content">
 				<Outlet />
 			</main>
 		</div>

@@ -1,0 +1,133 @@
+.home-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	padding: 2rem;
+	background: var(--bg);
+}
+
+.home-card {
+	width: 100%;
+	max-width: 420px;
+	text-align: center;
+	background: var(--bg2);
+	padding: 2rem;
+	border-radius: 1rem;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.home-title {
+	color: var(--accent);
+	margin-bottom: 0.75rem;
+	font-size: 1.75rem;
+	font-weight: 700;
+}
+
+.home-subtitle {
+	margin-bottom: 2rem;
+	color: var(--text2);
+	font-size: 1rem;
+	line-height: 1.4;
+}
+
+.home-label {
+	display: block;
+	margin-bottom: 0.5rem;
+	text-align: left;
+	color: var(--text);
+	font-size: 0.95rem;
+	font-weight: 500;
+}
+
+.home-card .input {
+	width: 100%;
+	margin-bottom: 1rem;
+}
+
+.home-divider,
+.home-divider-small {
+	margin: 1.5rem 0;
+	color: var(--text2);
+	font-size: 0.875rem;
+	position: relative;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	text-align: center;
+	background: var(--bg2);
+	padding: 0 1rem;
+	z-index: 2;
+}
+
+.home-divider-small {
+	margin: 1rem 0;
+}
+
+.home-divider::before,
+.home-divider-small::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: var(--border);
+	z-index: 1;
+}
+
+.btn-secondary {
+	background: transparent;
+	border: 2px solid var(--accent);
+	color: var(--accent);
+	padding: 0.85rem 1.5rem;
+	border-radius: 0.75rem;
+	width: 100%;
+	cursor: pointer;
+	margin-bottom: 1rem;
+	transition: background 0.25s, transform 0.2s;
+}
+
+.btn-secondary:hover {
+	background: rgba(107, 70, 193, 0.12);
+	transform: translateY(-2px);
+}
+
+.btn-outline {
+	background: transparent;
+	border: 1px solid var(--border2);
+	color: var(--text2);
+	padding: 0.75rem 1.5rem;
+	border-radius: 0.75rem;
+	width: 100%;
+	cursor: pointer;
+	transition: background 0.25s, transform 0.2s;
+}
+
+.btn-outline:hover {
+	background: rgba(107, 114, 128, 0.08);
+	transform: translateY(-2px);
+}
+
+.home-error {
+	color: var(--error);
+	font-size: 0.9rem;
+	margin-top: 0.75rem;
+	text-align: left;
+}
+
+.guest-description {
+	font-size: 0.85rem;
+	margin-top: 0.5rem;
+	color: var(--text3);
+	line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+	.home-card {
+		padding: 1.5rem;
+	}
+	
+	.home-title {
+		font-size: 1.5rem;
+	}
+}
