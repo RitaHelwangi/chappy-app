@@ -51,6 +51,11 @@ export interface MessagesResponse {
         time: string;
         channelId: string;
     }[];
+    channel?: {
+        id: string;
+        name: string;
+        isPrivate: boolean;
+    };
     error?: string;
 }
 

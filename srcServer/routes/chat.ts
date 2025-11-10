@@ -3,105 +3,87 @@ import type { Request, Response } from 'express'
 import { QueryCommand, PutCommand } from '@aws-sdk/lib-dynamodb'
 import { db, tableName } from '../data/dynamoDB.js'
 import { validateInput, sendMessageSchema } from '../data/validation.js'
-import { verifyToken } from '../data/auth.js'
+import { checkChannelAccess } from '../middleware.js'
 import type { MessagesResponse, MessageResponse, JwtPayload } from '../data/types.js'
 
 const router = Router()
 
 router.get('/:channelId', async (req: Request, res: Response<MessagesResponse>) => {
 	try {
-		const { channelId } = req.params
-
-		const queryCommand = new QueryCommand({
+		const { channelId } = req.params;
+		
+		const channelResult = await db.send(new QueryCommand({
+			TableName: tableName,
+			KeyConditionExpression: 'pk = :channelPk',
+			ExpressionAttributeValues: { ':channelPk': `CHANNEL#${channelId}` }
+		}));
+		const channel = channelResult.Items?.[0];
+		if (!channel) {
+			return res.status(404).json({ success: false, error: 'Channel not found' });
+		}
+		
+		const messagesResult = await db.send(new QueryCommand({
 			TableName: tableName,
 			KeyConditionExpression: 'pk = :channelPk AND begins_with(sk, :msgPrefix)',
-			ExpressionAttributeValues: {
-				':channelPk': `CHANNEL#${channelId}`,
-				':msgPrefix': 'MSG#'
-			},
+			ExpressionAttributeValues: { ':channelPk': `CHANNEL#${channelId}`, ':msgPrefix': 'MSG#' },
 			ScanIndexForward: true
-		})
-
-		const result = await db.send(queryCommand)
-		
-		const messages = result.Items?.map(item => ({
+		}));
+		const messages = messagesResult.Items?.map(item => ({
 			id: item.sk as string,
 			sender: item.sender as string,
 			text: item.text as string,
 			time: item.time as string,
 			channelId: channelId!
-		})) || []
-
-		console.log(`Retrieved ${messages.length} messages for channel: ${channelId}`)
-
+		})) || [];
 		return res.json({
 			success: true,
-			messages
-		})
-
+			messages,
+			channel: {
+				id: channelId!,
+				name: channel.name as string,
+				isPrivate: channel.isLocked as boolean
+			}
+		});
 	} catch (error) {
-		console.error('Get messages error:', error)
-		return res.status(500).json({
-			success: false,
-			error: 'Failed to get messages'
-		})
+		console.error('Get messages error:', error);
+		return res.status(500).json({ success: false, error: 'Failed to get messages' });
 	}
-})
+});
 
-router.post('/', verifyToken, async (req: Request, res: Response<MessageResponse>) => {
+router.post('/', checkChannelAccess, async (req: Request, res: Response<MessageResponse>) => {
 	try {
-		const validation = validateInput(sendMessageSchema, req.body)
-		
+		const validation = validateInput(sendMessageSchema, req.body);
 		if (!validation.success) {
-			return res.status(400).json({
-				success: false,
-				error: validation.error
-			})
+			return res.status(400).json({ success: false, error: validation.error });
 		}
-
-		const { channelId, text } = validation.data as { channelId: string; text: string }
-		
-		// Get username from JWT token
-		const { username } = (req as any).user as JwtPayload
-		const sender = username
-		const messageId = `MSG#${Date.now()}`
-		const timestamp = new Date().toISOString()
-
-		const message = {
-			pk: `CHANNEL#${channelId}`,
-			sk: messageId,
-			text: text,
-			sender: sender,
-			time: timestamp
-		}
-
-		const putCommand = new PutCommand({
+		const { channelId, text } = validation.data as { channelId: string; text: string };
+		const sender = (req as any).user ? ((req as any).user as JwtPayload).username : 'Guest';
+		const messageId = `MSG#${Date.now()}`;
+		const timestamp = new Date().toISOString();
+		await db.send(new PutCommand({
 			TableName: tableName,
-			Item: message
-		})
-
-		await db.send(putCommand)
-
-		console.log(`Message sent to ${channelId}: "${text}" by ${sender}`)
-
+			Item: {
+				pk: `CHANNEL#${channelId}`,
+				sk: messageId,
+				text,
+				sender,
+				time: timestamp
+			}
+		}));
 		return res.json({
 			success: true,
 			message: {
 				id: messageId,
-				sender: sender,
-				text: text,
+				sender,
+				text,
 				time: timestamp,
-				channelId: channelId
+				channelId
 			}
-		})
-
+		});
 	} catch (error) {
-		console.error('Send message error:', error)
-		return res.status(500).json({
-			success: false,
-			error: 'Failed to send message'
-		})
+		console.error('Send message error:', error);
+		return res.status(500).json({ success: false, error: 'Failed to send message' });
 	}
-})
+});
 
 export default router
