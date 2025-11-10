@@ -6,7 +6,7 @@ import '../styles/Home.css'
 
 const LS_KEY = 'chappy-token'
 
-export function HomePage() {
+export function RegisterPage() {
 	const navigate = useNavigate()
 	const [loading, setLoading] = useState(false)
 	const [message, setMessage] = useState('')
@@ -20,7 +20,7 @@ export function HomePage() {
 		const password = (form.elements.namedItem('password') as HTMLInputElement).value
 		
 		try {
-			const res = await fetch('/api/login', {
+			const res = await fetch('/api/register', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ username, password })
@@ -32,7 +32,7 @@ export function HomePage() {
 				localStorage.setItem(LS_KEY, result.token)
 				navigate('/channels')
 			} else {
-				setMessage(result.error || 'Login failed')
+				setMessage(result.error || 'Registration failed')
 			}
 		} catch (error) {
 			setMessage('Connection error')
@@ -43,8 +43,8 @@ export function HomePage() {
 	return (
 		<div className="home-container">
 			<div className="card home-card">
-				<h1 className="home-title">Chappy</h1>
-				<p className="text-secondary home-subtitle">Connect with your community</p>
+				<h1 className="home-title">Join Chappy</h1>
+				<p className="text-secondary home-subtitle">Create your account and start connecting</p>
 				
 				<form className="form" onSubmit={handleSubmit}>
 					<div>
@@ -53,7 +53,7 @@ export function HomePage() {
 							id="username"
 							name="username" 
 							className="input" 
-							placeholder="Enter your name" 
+							placeholder="Choose a username" 
 							required 
 						/>
 					</div>
@@ -65,13 +65,13 @@ export function HomePage() {
 							name="password" 
 							type="password"
 							className="input" 
-							placeholder="Enter your password" 
+							placeholder="Create a password" 
 							required 
 						/>
 					</div>
 					
 					<Button type="submit" loading={loading} className="btn">
-						Login
+						Create Account
 					</Button>
 				</form>
 				
@@ -79,8 +79,8 @@ export function HomePage() {
 				
 				<div className="home-divider">or</div>
 				
-				<Button onClick={() => navigate('/register')} className="btn btn-secondary">
-					Create Account
+				<Button onClick={() => navigate('/')} className="btn btn-secondary">
+					Back to Login
 				</Button>
 				
 				<div className="home-divider-small">or</div>
@@ -89,64 +89,9 @@ export function HomePage() {
 					Continue as Guest
 				</Button>
 				<p className="text-secondary guest-description">
-					Browse channels with limited features. Login for full access.
+					Browse channels with limited features. Register for full access.
 				</p>
 			</div>
 		</div>
 	)
 }
-
-export function LoginPage() {
-	const [loading, setLoading] = useState(false)
-	const [message, setMessage] = useState('')
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault()
-		setLoading(true)
-		
-		const form = e.target as HTMLFormElement
-		const username = (form.elements.namedItem('username') as HTMLInputElement).value
-		const password = (form.elements.namedItem('password') as HTMLInputElement).value
-		
-		try {
-			const res = await fetch('/api/login', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username, password })
-			})
-			
-			const result = await res.json()
-			
-			if (result.success) {
-				console.log(`✅ User logged in successfully: ${username}`)
-				console.log(`🎟️ Token received: ${result.token}`)
-	
-				const jwt: string = result.token
-				localStorage.setItem(LS_KEY, jwt)
-				
-				form.reset()
-			} else {
-				const errorMsg = result.error || 'Login failed'
-				console.error(`❌ Login failed: ${errorMsg}`)
-				setMessage(errorMsg)
-			}
-		} catch (error) {
-			console.error(`❌ Connection error during login:`, error)
-		}
-		setLoading(false)
-	}
-
-	return (
-		<div>
-			<h2>Login</h2>
-			<form onSubmit={handleSubmit}>
-				<input name="username" placeholder="Username" required />
-				<input type="password" name="password" placeholder="Password" required />
-				<Button type="submit" loading={loading}>Login</Button>
-			</form>
-			{message && <p style={{ color: 'red', textDecoration: 'underline' }}>{message}</p>}
-		</div>
-	)
-}
-
-

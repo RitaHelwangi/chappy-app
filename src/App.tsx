@@ -1,7 +1,8 @@
 import "./App.css";
 import { RouterProvider, Outlet } from "react-router";
 import { createHashRouter } from "react-router";
-import { HomePage, LoginPage, RegisterPage } from "./pages/Home.tsx";
+import { HomePage, LoginPage } from "./pages/Home.tsx";
+import { RegisterPage } from "./pages/Register.tsx";
 import { ChannelsPage } from "./pages/Channels.tsx";
 import { UsersPage } from "./pages/Users.tsx";
 import Chat from "./pages/Chat.tsx";
