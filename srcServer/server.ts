@@ -29,6 +29,9 @@ app.use('/api/register', registerRoute)
 import loginRoute from './routes/login.js'
 app.use('/api/login', loginRoute)
 
+import usersRoute from './routes/users.js'
+app.use('/api/users', usersRoute)
+
 
 app.use(express.static('./dist/'))
 

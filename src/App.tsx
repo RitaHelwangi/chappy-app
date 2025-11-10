@@ -3,6 +3,7 @@ import { RouterProvider, Outlet } from "react-router";
 import { createHashRouter } from "react-router";
 import { HomePage, LoginPage, RegisterPage } from "./pages/Home.tsx";
 import { ChannelsPage } from "./pages/Channels.tsx";
+import { UsersPage } from "./pages/Users.tsx";
 import Chat from "./pages/Chat.tsx";
 
 function Layout() {
@@ -27,6 +28,7 @@ const router = createHashRouter([
 			{ path: "login", element: <LoginPage /> },
 			{ path: "register", element: <RegisterPage /> },
 			{ path: "channels", element: <ChannelsPage /> },
+			{ path: "users", element: <UsersPage /> },
 			{ path: "chat/:channelId", element: <Chat /> }
 		]
 	}
