@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router'
 import type { Message } from '../data/types'
 import { Button } from '../components/Button'
-import { Input } from '../components/Input'
 
 function Chat() {
     const { channelId } = useParams<{ channelId: string }>()
@@ -86,10 +85,10 @@ function Chat() {
 
     const renderInputArea = (enabled: boolean, placeholder: string) => (
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Input
+            <input
                 placeholder={placeholder}
                 value={enabled ? newMessage : ''}
-                onChange={enabled ? (e) => setNewMessage(e.target.value) : undefined}
+                onChange={enabled ? (e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value) : undefined}
                 onKeyPress={enabled ? handleKeyPress : undefined}
                 disabled={!enabled}
                 style={{ flex: 1, backgroundColor: enabled ? '' : '#f5f5f5', color: enabled ? '' : '#666' }}

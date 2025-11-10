@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router'
 import { Button } from '../components/Button'
-import { Input } from '../components/Input'
 
 interface DMMessage {
 	id: string
@@ -106,10 +105,10 @@ export function DMPage() {
 			</div>
 
 			<div style={{ display: 'flex', gap: '0.5rem' }}>
-				<Input
+				<input
 					placeholder={`Message @${username}...`}
 					value={newMessage}
-					onChange={(e) => setNewMessage(e.target.value)}
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value)}
 					onKeyPress={handleKeyPress}
 					style={{ flex: 1 }}
 				/>

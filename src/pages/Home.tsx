@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Button } from '../components/Button'
-import { Input } from '../components/Input'
 
 const LS_KEY = 'chappy-token'
 
@@ -68,8 +67,8 @@ export function LoginPage() {
 		<div>
 			<h2>Login</h2>
 			<form onSubmit={handleSubmit}>
-				<Input name="username" placeholder="Username" required />
-				<Input type="password" name="password" placeholder="Password" required />
+				<input name="username" placeholder="Username" required />
+				<input type="password" name="password" placeholder="Password" required />
 				<Button type="submit" loading={loading}>Login</Button>
 			</form>
 			{message && <p style={{ color: 'red', textDecoration: 'underline' }}>{message}</p>}
@@ -120,8 +119,8 @@ export function RegisterPage() {
 		<div>
 			<h2>Register</h2>
 			<form onSubmit={handleSubmit}>
-				<Input name="username" placeholder="Username" required />
-				<Input type="password" name="password" placeholder="Password" required />
+				<input name="username" placeholder="Username" required />
+				<input type="password" name="password" placeholder="Password" required />
 				<Button type="submit" loading={loading}>Register</Button>
 			</form>
 			{message && <p style={{ color: 'red', textDecoration: 'underline' }}>{message}</p>}
