@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router'
 import { Button } from '../components/Button'
+import '../styles/index.css'
+import '../styles/Chat.css'
 
 interface DMMessage {
 	id: string
@@ -74,45 +76,50 @@ export function DMPage() {
 
 	if (!isAuthenticated) {
 		return (
-			<div>
-				<h2>Direct Messages</h2>
-				<p>Please <Link to="/login">log in</Link> to access direct messages.</p>
+			<div className="chat-container">
+				<div className="chat-header">
+					<h2 className="chat-title">Direct Messages</h2>
+				</div>
+				<div className="chat-empty">Please <Link to="/" className="chat-back-link">log in</Link> to access direct messages.</div>
 			</div>
 		)
 	}
 
-	if (loading) return <div>Loading...</div>
-	if (error) return <div>Error: {error}</div>
+	if (loading) return <div className="loading-spinner">Loading...</div>
+	if (error) return <div className="error">{error}</div>
 
 	return (
-		<div>
-			<h2>DM with @{username}</h2>
+		<div className="chat-container">
+			<div className="chat-header">
+				<Link to="/users" className="chat-back-link">← Back</Link>
+				<h2 className="chat-title">💬 @{username}</h2>
+			</div>
 			
-			<div style={{ height: '400px', overflowY: 'auto', border: '1px solid #ccc', padding: '1rem', marginBottom: '1rem' }}>
+			<div className="chat-messages">
 				{messages.length === 0 ? (
-					<p>No messages yet. Start the conversation!</p>
+					<div className="chat-empty">No messages yet. Start the conversation!</div>
 				) : (
 					messages.map((message) => (
-						<div key={message.id} style={{ marginBottom: '1rem' }}>
-							<strong>{message.sender}</strong>
-							<span style={{ color: '#666', fontSize: '0.8rem', marginLeft: '0.5rem' }}>
-								{new Date(message.time).toLocaleTimeString()}
-							</span>
-							<div>{message.text}</div>
+						<div key={message.id} className="chat-message">
+							<div className="chat-message-header">
+								<span className="chat-sender">{message.sender}</span>
+								<span className="chat-time">{new Date(message.time).toLocaleTimeString()}</span>
+							</div>
+							<div className="chat-text">{message.text}</div>
 						</div>
 					))
 				)}
 			</div>
 
-			<div style={{ display: 'flex', gap: '0.5rem' }}>
+			<div className="chat-input-area">
 				<input
+					className="input chat-input"
 					placeholder={`Message @${username}...`}
 					value={newMessage}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value)}
+					onChange={(e) => setNewMessage(e.target.value)}
 					onKeyPress={handleKeyPress}
-					style={{ flex: 1 }}
 				/>
-				<Button onClick={sendDM} disabled={!newMessage.trim()}>
+				<Button onClick={sendDM} disabled={!newMessage.trim()} className="btn">
 					Send
 				</Button>
 			</div>

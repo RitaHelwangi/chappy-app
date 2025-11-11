@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router'
 import type { Message } from '../data/types'
 import { Button } from '../components/Button'
+import '../styles/index.css'
+import '../styles/Chat.css'
 
 function Chat() {
     const { channelId } = useParams<{ channelId: string }>()
@@ -84,45 +86,46 @@ function Chat() {
     }
 
     const renderInputArea = (enabled: boolean, placeholder: string) => (
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div className="chat-input-area">
             <input
+                className="input chat-input"
                 placeholder={placeholder}
                 value={enabled ? newMessage : ''}
-                onChange={enabled ? (e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value) : undefined}
+                onChange={enabled ? (e) => setNewMessage(e.target.value) : undefined}
                 onKeyPress={enabled ? handleKeyPress : undefined}
                 disabled={!enabled}
-                style={{ flex: 1, backgroundColor: enabled ? '' : '#f5f5f5', color: enabled ? '' : '#666' }}
             />
             <Button 
                 onClick={enabled ? sendMessage : undefined} 
                 disabled={!enabled || !newMessage.trim()}
-                style={enabled ? {} : { backgroundColor: '#ccc', color: '#666' }}
+                className="btn"
             >
-                {enabled ? 'Send' : <Link to="/login" style={{ color: 'inherit', textDecoration: 'none' }}>Login</Link>}
+                {enabled ? 'Send' : <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Login</Link>}
             </Button>
         </div>
     )
 
-    if (loading) return <div>Loading...</div>
-    if (error) return <div>Error: {error}</div>
-
-
+    if (loading) return <div className="loading-spinner">Loading...</div>
+    if (error) return <div className="error">{error}</div>
 
     return (
-        <div>
-            <h2>{isPrivateChannel ? '🔒' : '🔓'} #{channelId}</h2>
+        <div className="chat-container">
+            <div className="chat-header">
+                <Link to="/channels" className="chat-back-link">← Back</Link>
+                <h2 className="chat-title">{isPrivateChannel ? '🔒' : '🍿'} #{channelId}</h2>
+            </div>
             
-            <div style={{ height: '400px', overflowY: 'auto', border: '1px solid #ccc', padding: '1rem', marginBottom: '1rem' }}>
+            <div className="chat-messages">
                 {messages.length === 0 ? (
-                    <p>No messages yet. Start the conversation!</p>
+                    <div className="chat-empty">No messages yet. Start the conversation!</div>
                 ) : (
                     messages.map((message) => (
-                        <div key={message.id} style={{ marginBottom: '1rem' }}>
-                            <strong>{message.sender}</strong>
-                            <span style={{ color: '#666', fontSize: '0.8rem', marginLeft: '0.5rem' }}>
-                                {new Date(message.time).toLocaleTimeString()}
-                            </span>
-                            <div>{message.text}</div>
+                        <div key={message.id} className="chat-message">
+                            <div className="chat-message-header">
+                                <span className="chat-sender">{message.sender}</span>
+                                <span className="chat-time">{new Date(message.time).toLocaleTimeString()}</span>
+                            </div>
+                            <div className="chat-text">{message.text}</div>
                         </div>
                     ))
                 )}
