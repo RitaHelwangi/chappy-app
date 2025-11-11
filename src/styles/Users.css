@@ -1,0 +1,130 @@
+.users-container {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: 1rem;
+}
+
+.users-header {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 1.5rem;
+	padding: 0.75rem;
+	background: var(--bg2);
+	border-radius: 0.75rem;
+	border: 1px solid var(--border);
+}
+
+.users-title {
+	color: var(--accent);
+	font-size: 1.5rem;
+	font-weight: 600;
+	margin: 0;
+}
+
+.users-back-link {
+	color: var(--accent);
+	text-decoration: none;
+	font-size: 0.9rem;
+}
+
+.users-back-link:hover {
+	text-decoration: underline;
+}
+
+.users-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.users-empty {
+	color: var(--text2);
+	text-align: center;
+	padding: 2rem;
+	background: var(--bg2);
+	border-radius: 0.75rem;
+	border: 1px solid var(--border);
+}
+
+.user-item {
+	background: var(--bg2);
+	border: 1px solid var(--border);
+	border-radius: 0.75rem;
+	padding: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	transition: all 0.25s;
+}
+
+.user-item:hover {
+	border-color: var(--border2);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.user-avatar {
+	width: 40px;
+	height: 40px;
+	background: var(--accent);
+	color: white;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	font-size: 0.9rem;
+}
+
+.user-name {
+	color: var(--text);
+	font-weight: 500;
+	font-size: 1rem;
+}
+
+.user-action {
+	color: var(--accent);
+	text-decoration: none;
+	font-size: 0.9rem;
+	font-weight: 500;
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--accent);
+	border-radius: 0.5rem;
+	transition: all 0.25s;
+}
+
+.user-action:hover {
+	background: rgba(107, 70, 193, 0.1);
+	text-decoration: none;
+}
+
+.user-disabled {
+	color: var(--text3);
+	font-size: 0.9rem;
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--border);
+	border-radius: 0.5rem;
+}
+
+@media (max-width: 768px) {
+	.users-container {
+		padding: 0.75rem;
+	}
+	
+	.user-item {
+		padding: 0.875rem;
+	}
+	
+	.user-avatar {
+		width: 36px;
+		height: 36px;
+		font-size: 0.8rem;
+	}
+}
