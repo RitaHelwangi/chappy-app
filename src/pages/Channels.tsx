@@ -1,16 +1,31 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+import { Button } from '../components/Button'
 import type { Channel } from '../data/types'
+import '../styles/index.css'
+import '../styles/Home.css'
+import '../styles/Channels.css'
 
 export function ChannelsPage() {
+	const navigate = useNavigate()
 	const [channels, setChannels] = useState<Channel[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState('')
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
+	const [username, setUsername] = useState('')
 
 	useEffect(() => {
 		const token = localStorage.getItem('chappy-token')
 		setIsAuthenticated(!!token)
+		
+		if (token) {
+			try {
+				const payload = JSON.parse(atob(token.split('.')[1]))
+				setUsername(payload.username || '')
+			} catch {
+				setUsername('')
+			}
+		}
 	}, [])
 
 	useEffect(() => {
@@ -35,29 +50,63 @@ export function ChannelsPage() {
 		getAllChannels()
 	}, [])
 
-	if (loading) return <div>Loading channels...</div>
-	if (error) return <div>Error: {error}</div>
+	if (loading) return <div className="loading-spinner">Loading channels...</div>
+	if (error) return <div className="error">{error}</div>
 
 	return (
-		<div>
-			<h2>Channels</h2>
-			{channels.length === 0 ? (
-				<p>No channels found.</p>
-			) : (
-				channels.map(channel => (
-					<div key={channel.id} style={{ marginBottom: '0.5rem' }}>
-						{channel.isLocked && !isAuthenticated ? (
-							<div>
-								🔒 #{channel.name} | <span style={{ color: '#666' }}>This is a private channel. <Link to="/login">Please log in</Link> to view messages.</span>
+		<div className="home-container">
+			<div className="card home-card" style={{ maxWidth: '600px' }}>
+				<h1 className="home-title">Channels</h1>
+				<p className="text-secondary home-subtitle">
+					{isAuthenticated ? `Welcome ${username || 'back'}! Choose a channel to join the conversation.` : 'Browse available channels. Login for full access to private channels.'}
+				</p>
+
+				{channels.length === 0 ? (
+					<p className="text-secondary">No channels found.</p>
+				) : (
+					<div className="channels-list">
+						{channels.map(channel => (
+							<div key={channel.id} className="channel-item">
+								{channel.isLocked && !isAuthenticated ? (
+									<div className="channel-locked">
+										<div className="channel-info">
+											<span className="channel-icon">🔒</span>
+											<span className="channel-name">#{channel.name}</span>
+										</div>
+										<p className="channel-description text-secondary">
+											This is a private channel. <Link to="/" className="channel-login-link">Login</Link> to access.
+										</p>
+									</div>
+								) : (
+									<Link to={`/chat/${channel.id}`} className="channel-link">
+										<div className="channel-info">
+											<span className="channel-icon">{channel.isLocked ? '🔒' : '🍿'}</span>
+											<span className="channel-name">#{channel.name}</span>
+										</div>
+										<div className="channel-arrow">→</div>
+									</Link>
+								)}
 							</div>
-						) : (
-							<Link to={`/chat/${channel.id}`}>
-								{channel.isLocked ? '🔒' : '🔓'} #{channel.name}
-							</Link>
-						)}
+						))}
 					</div>
-				))
-			)}
+				)}
+
+				<div className="home-divider">explore</div>
+
+				<div className="channel-actions-single">
+					<Button onClick={() => navigate('/users')} className="btn btn-secondary">
+						View Users
+					</Button>
+					{isAuthenticated && (
+						<Button onClick={() => {
+							localStorage.removeItem('chappy-token')
+							navigate('/')
+						}} className="btn btn-outline" style={{ marginTop: '0.75rem' }}>
+							Logout
+						</Button>
+					)}
+				</div>
+			</div>
 		</div>
 	)
 }

@@ -1,0 +1,138 @@
+/* Channels Page */
+.loading-spinner {
+	text-align: center;
+	color: var(--text2);
+	font-size: 1rem;
+}
+
+.channel-empty {
+	text-align: center;
+	padding: 2rem 0;
+}
+
+.channels-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	margin-bottom: 1.5rem;
+}
+
+.channel-item {
+	background: var(--bg3);
+	border: 1px solid var(--border);
+	border-radius: 0.75rem;
+	overflow: hidden;
+	transition: all 0.25s;
+}
+
+.channel-item:hover {
+	border-color: var(--border2);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.channel-link {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1rem 1.25rem;
+	text-decoration: none;
+	color: inherit;
+	width: 100%;
+	transition: background 0.2s;
+}
+
+.channel-link:hover {
+	background: rgba(107, 70, 193, 0.05);
+}
+
+.channel-locked {
+	padding: 1rem 1.25rem;
+	opacity: 0.7;
+}
+
+.channel-info {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex: 1;
+}
+
+.channel-icon {
+	font-size: 1.1rem;
+	width: 1.5rem;
+	text-align: center;
+}
+
+.channel-name {
+	font-weight: 500;
+	font-size: 1rem;
+	color: var(--text);
+}
+
+.channel-arrow {
+	color: var(--accent);
+	font-size: 1.2rem;
+	font-weight: bold;
+	transition: transform 0.2s;
+}
+
+.channel-link:hover .channel-arrow {
+	transform: translateX(3px);
+}
+
+.channel-description {
+	margin-top: 0.5rem;
+	font-size: 0.875rem;
+	line-height: 1.4;
+}
+
+.channel-login-link {
+	color: var(--accent);
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.channel-login-link:hover {
+	text-decoration: underline;
+}
+
+.channel-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.channel-actions-single {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.channel-actions-single .btn {
+	max-width: 200px;
+	width: 100%;
+}
+
+@media (min-width: 640px) {
+	.channel-actions {
+		flex-direction: row;
+		gap: 1rem;
+	}
+	
+	.channel-actions .btn {
+		flex: 1;
+	}
+}
+
+@media (max-width: 480px) {
+	.channel-link,
+	.channel-locked {
+		padding: 0.875rem 1rem;
+	}
+	
+	.channel-name {
+		font-size: 0.95rem;
+	}
+}
