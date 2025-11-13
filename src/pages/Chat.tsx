@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router'
+import { useParams, Link, useNavigate } from 'react-router'
 import type { Message } from '../data/types'
 import { Button } from '../components/Button'
 import { formatDateTime } from '../utils/dateFormat'
@@ -8,12 +8,15 @@ import '../styles/Chat.css'
 
 function Chat() {
     const { channelId } = useParams<{ channelId: string }>()
+    const navigate = useNavigate()
     const [messages, setMessages] = useState<Message[]>([])
     const [newMessage, setNewMessage] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [isPrivateChannel, setIsPrivateChannel] = useState(false)
+    const [channelName, setChannelName] = useState('')
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
     useEffect(() => {
         const token = localStorage.getItem('chappy-token')
@@ -35,6 +38,7 @@ function Chat() {
                 if (data.success) {
                     setMessages(data.messages)
                     setIsPrivateChannel(data.channel?.isPrivate || false)
+                    setChannelName(data.channel?.name || channelId || '')
                     setLoading(false)
                 } else if (response.status === 401 || response.status === 403) {
                     setIsPrivateChannel(true)
@@ -80,6 +84,25 @@ function Chat() {
         }
     }
 
+    const deleteChannel = async () => {
+        const token = localStorage.getItem('chappy-token')
+        try {
+            const res = await fetch(`/api/channels/${channelId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            const data = await res.json()
+
+            if (data.success) {
+                navigate('/channels')
+            } else {
+                setError(data.error || 'Failed to delete channel')
+            }
+        } catch {
+            setError('Failed to delete channel')
+        }
+    }
+
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault()
@@ -114,7 +137,19 @@ function Chat() {
         <div className="chat-container">
             <div className="chat-header">
                 <Link to="/channels" className="chat-back-link">← Back</Link>
-                <h2 className="chat-title">{isPrivateChannel ? '🔒' : '🍿'} #{channelId}</h2>
+                <h2 className="chat-title">{isPrivateChannel ? '🔒' : '🍿'} #{channelName || channelId}</h2>
+                {isAuthenticated && !showDeleteConfirm && (
+                    <button onClick={() => setShowDeleteConfirm(true)} className="chat-delete-btn" title="Delete channel">
+                        🗑️
+                    </button>
+                )}
+                {showDeleteConfirm && (
+                    <div className="chat-delete-confirm">
+                        <span>Delete?</span>
+                        <button onClick={deleteChannel} className="chat-confirm-link">Yes</button>
+                        <button onClick={() => setShowDeleteConfirm(false)} className="chat-confirm-link">No</button>
+                    </div>
+                )}
             </div>
             
             <div className="chat-messages">

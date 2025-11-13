@@ -10,6 +10,32 @@
 	padding: 2rem 0;
 }
 
+.create-channel-section {
+	margin-bottom: 1.5rem;
+}
+
+.create-channel-form {
+	padding: 1rem;
+	background-color: var(--bg2);
+	margin-bottom: 0.5rem;
+}
+
+.create-channel-input {
+	margin-bottom: 0.5rem;
+}
+
+.create-channel-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.75rem;
+}
+
+.create-channel-buttons {
+	display: flex;
+	gap: 0.5rem;
+}
+
 .channels-list {
 	display: flex;
 	flex-direction: column;
@@ -113,6 +139,10 @@
 .channel-actions-single .btn {
 	max-width: 200px;
 	width: 100%;
+}
+
+.channel-logout-btn {
+	margin-top: 0.75rem;
 }
 
 @media (min-width: 640px) {

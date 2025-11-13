@@ -13,6 +13,9 @@ export function ChannelsPage() {
 	const [error, setError] = useState('')
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
 	const [username, setUsername] = useState('')
+	const [newChannelName, setNewChannelName] = useState('')
+	const [isPrivate, setIsPrivate] = useState(false)
+	const [showCreateForm, setShowCreateForm] = useState(false)
 
 	useEffect(() => {
 		const token = localStorage.getItem('chappy-token')
@@ -50,6 +53,37 @@ export function ChannelsPage() {
 		getAllChannels()
 	}, [])
 
+	const createChannel = async () => {
+		if (!newChannelName.trim()) return
+
+		const token = localStorage.getItem('chappy-token')
+		try {
+			const res = await fetch('/api/channels', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({ 
+					name: newChannelName.trim(), 
+					isLocked: isPrivate 
+				})
+			})
+			const data = await res.json()
+
+			if (data.success) {
+				setChannels(prev => [...prev, data.channel])
+				setNewChannelName('')
+				setIsPrivate(false)
+				setShowCreateForm(false)
+			} else {
+				setError(data.error || 'Failed to create channel')
+			}
+		} catch {
+			setError('Failed to create channel')
+		}
+	}
+
 	if (loading) return <div className="loading-spinner">Loading channels...</div>
 	if (error) return <div className="error">{error}</div>
 
@@ -60,6 +94,46 @@ export function ChannelsPage() {
 				<p className="text-secondary home-subtitle">
 					{isAuthenticated ? `Welcome ${username || 'back'}! Choose a channel to join the conversation.` : 'Browse available channels. Login for full access to private channels.'}
 				</p>
+
+				{isAuthenticated && (
+					<div className="create-channel-section">
+						{!showCreateForm ? (
+							<Button onClick={() => setShowCreateForm(true)} className="btn">
+								+ Create Channel
+							</Button>
+						) : (
+							<div className="card create-channel-form">
+								<input
+									className="input create-channel-input"
+									placeholder="Channel name..."
+									value={newChannelName}
+									onChange={(e) => setNewChannelName(e.target.value)}
+									onKeyPress={(e) => e.key === 'Enter' && createChannel()}
+								/>
+								<label className="create-channel-checkbox">
+									<input
+										type="checkbox"
+										checked={isPrivate}
+										onChange={(e) => setIsPrivate(e.target.checked)}
+									/>
+									<span>Private channel 🔒</span>
+								</label>
+								<div className="create-channel-buttons">
+									<Button onClick={createChannel} disabled={!newChannelName.trim()} className="btn">
+										Create
+									</Button>
+									<Button onClick={() => {
+										setShowCreateForm(false)
+										setNewChannelName('')
+										setIsPrivate(false)
+									}} className="btn btn-outline">
+										Cancel
+									</Button>
+								</div>
+							</div>
+						)}
+					</div>
+				)}
 
 				{channels.length === 0 ? (
 					<p className="text-secondary">No channels found.</p>
@@ -101,7 +175,7 @@ export function ChannelsPage() {
 						<Button onClick={() => {
 							localStorage.removeItem('chappy-token')
 							navigate('/')
-						}} className="btn btn-outline" style={{ marginTop: '0.75rem' }}>
+						}} className="btn btn-outline channel-logout-btn">
 							Logout
 						</Button>
 					)}
