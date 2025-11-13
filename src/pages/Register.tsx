@@ -14,6 +14,7 @@ export function RegisterPage() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 		setLoading(true)
+		setMessage('') 
 		
 		const form = e.target as HTMLFormElement
 		const username = (form.elements.namedItem('username') as HTMLInputElement).value
@@ -28,7 +29,7 @@ export function RegisterPage() {
 			
 			const result = await res.json()
 			
-			if (result.success) {
+			if (res.ok && result.success) {
 				localStorage.setItem(LS_KEY, result.token)
 				navigate('/channels')
 			} else {

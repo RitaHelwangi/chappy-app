@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import type { Request, Response } from 'express'
-import { PutCommand } from '@aws-sdk/lib-dynamodb'
+import { PutCommand, GetCommand } from '@aws-sdk/lib-dynamodb'
 import { db, tableName } from '../data/dynamoDB.js'
 import { createToken } from '../data/auth.js'
 import type { User } from '../data/types.js'
@@ -16,11 +16,24 @@ router.post('/', async (req: Request, res: Response) => {
 			return res.status(400).json({ success: false, error: validation.error })
 		}
 
-		const { username, password } = validation.data
-		const hashedPassword = await bcrypt.hash(password, 10)
-		const userId = Date.now().toString()
+	const { username, password } = validation.data
+
+	const existingUser = await db.send(new GetCommand({
+		TableName: tableName,
+		Key: { pk: `USER#${username}`, sk: 'PROFILE' }
+	}))
+
+	if (existingUser.Item) {
+		return res.status(409).json({ 
+			success: false, 
+			error: 'Username already exists. Please choose a different username.' 
+		})
+	}
+
+	const hashedPassword = await bcrypt.hash(password, 10)
+	const userId = Date.now().toString()
 	
-		await Promise.all([
+	await Promise.all([
 			db.send(new PutCommand({
 				TableName: tableName,
 				Item: {
