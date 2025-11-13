@@ -21,6 +21,14 @@ export const sendMessageSchema = z.object({
 	text: z.string().min(1, 'Message cannot be empty').max(1000, 'Message too long'),
 })
 
+export const createChannelSchema = z.object({
+	name: z.string()
+		.min(1, 'Channel name is required')
+		.max(50, 'Channel name must be less than 50 characters')
+		.regex(/^[a-zA-Z0-9\s\-_]+$/, 'Channel name can only contain letters, numbers, spaces, hyphens, and underscores'),
+	isLocked: z.boolean().optional()
+})
+
 export const validateInput = <T>(schema: z.ZodSchema<T>, data: unknown): 
 | { success: true; data: T }
 | { success: false; error: string } => {

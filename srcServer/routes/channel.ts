@@ -3,6 +3,7 @@ import type { Request, Response } from 'express'
 import { QueryCommand, PutCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb'
 import { db, tableName } from '../data/dynamoDB.js'
 import { verifyToken } from '../middleware.js'
+import { validateInput, createChannelSchema } from '../data/validation.js'
 
 const router = Router()
 
@@ -33,12 +34,13 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.post('/', verifyToken, async (req: Request, res: Response) => {
 	try {
-		const { name, isLocked } = req.body
+		const validation = validateInput(createChannelSchema, req.body)
 		
-		if (!name) {
-			return res.status(400).json({ success: false, error: 'Channel name is required' })
+		if (!validation.success) {
+			return res.status(400).json({ success: false, error: validation.error })
 		}
 
+		const { name, isLocked } = validation.data
 		const channelId = `${Date.now()}`
 		
 		await db.send(new PutCommand({

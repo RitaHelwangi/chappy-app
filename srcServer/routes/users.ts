@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import type { Request, Response } from 'express'
-import { QueryCommand, GetCommand } from '@aws-sdk/lib-dynamodb'
+import { QueryCommand, GetCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb'
 import { db, tableName } from '../data/dynamoDB.js'
+import { verifyToken } from '../middleware.js'
 
 const router = Router()
 
@@ -53,6 +54,24 @@ router.get('/:username', async (req: Request, res: Response) => {
 	} catch (error) {
 		console.error('Get user error:', error)
 		return res.status(500).json({ success: false, error: 'Failed to get user' })
+	}
+})
+
+router.delete('/me', verifyToken, async (req: Request, res: Response) => {
+	try {
+		const username = (req as any).user.username
+
+		await db.send(new DeleteCommand({
+			TableName: tableName,
+			Key: { pk: `USER#${username}`, sk: 'PROFILE' }
+		}))
+
+		console.log(`Deleted user: ${username}`)
+		return res.json({ success: true })
+
+	} catch (error) {
+		console.error('Delete user error:', error)
+		return res.status(500).json({ success: false, error: 'Failed to delete user' })
 	}
 })
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Button } from '../components/Button'
 import '../styles/index.css'
@@ -10,19 +10,6 @@ export function HomePage() {
 	const navigate = useNavigate()
 	const [loading, setLoading] = useState(false)
 	const [message, setMessage] = useState('')
-	const [username, setUsername] = useState<string | null>(null)
-	
-	useEffect(() => {
-		const token = localStorage.getItem(LS_KEY)
-		if (token) {
-			try {
-				const payload = JSON.parse(atob(token.split('.')[1]))
-				setUsername(payload.username)
-			} catch (error) {
-				console.error('Invalid token')
-			}
-		}
-	}, [])
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -56,11 +43,6 @@ export function HomePage() {
 	return (
 		<div className="home-container">
 			<div className="card home-card">
-				{username && (
-					<div className="home-user-icon">
-						{username.charAt(0).toUpperCase()}
-					</div>
-				)}
 				<h1 className="home-title">Chappy</h1>
 				<p className="text-secondary home-subtitle">Connect with your community</p>
 				
@@ -95,13 +77,13 @@ export function HomePage() {
 				
 				{message && <p className="error home-error">{message}</p>}
 				
-				<div className="home-divider">or</div>
+				<div className="home-divider"><span>or</span></div>
 				
 				<Button onClick={() => navigate('/register')} className="btn btn-secondary">
 					Create Account
 				</Button>
 				
-				<div className="home-divider-small">or</div>
+				<div className="home-divider-small"><span>or</span></div>
 				
 				<Button onClick={() => navigate('/channels')} className="btn btn-outline">
 					Continue as Guest

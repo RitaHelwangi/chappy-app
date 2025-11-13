@@ -81,6 +81,19 @@
 	justify-content: center;
 	font-weight: 600;
 	font-size: 0.9rem;
+	flex-shrink: 0;
+}
+
+.user-avatar-large {
+	width: 60px;
+	height: 60px;
+	font-size: 1.5rem;
+	transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.user-avatar-large:hover {
+	transform: scale(1.05);
+	box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
 }
 
 .user-name {
