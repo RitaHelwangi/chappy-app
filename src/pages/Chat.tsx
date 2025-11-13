@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router'
 import type { Message } from '../data/types'
 import { Button } from '../components/Button'
+import { formatDateTime } from '../utils/dateFormat'
 import '../styles/index.css'
 import '../styles/Chat.css'
 
@@ -22,8 +23,7 @@ function Chat() {
     useEffect(() => {
         if (!channelId) return
 
-        const getMessages = async () => {
-            setLoading(true)
+        const loadMessages = async () => {
             const token = localStorage.getItem('chappy-token')
             const headers: Record<string, string> = {}
             if (token) headers['Authorization'] = `Bearer ${token}`
@@ -35,20 +35,22 @@ function Chat() {
                 if (data.success) {
                     setMessages(data.messages)
                     setIsPrivateChannel(data.channel?.isPrivate || false)
+                    setLoading(false)
                 } else if (response.status === 401 || response.status === 403) {
                     setIsPrivateChannel(true)
                     setMessages([])
+                    setLoading(false)
                 } else {
                     setError(data.error || 'Failed to load messages')
                 }
             } catch {
                 setError('Failed to connect to server')
-            } finally {
-                setLoading(false)
             }
         }
 
-        getMessages()
+        loadMessages()
+        const timer = setInterval(loadMessages, 3000)
+        return () => clearInterval(timer)
     }, [channelId])
 
     const sendMessage = async () => {
@@ -123,7 +125,7 @@ function Chat() {
                         <div key={message.id} className="chat-message">
                             <div className="chat-message-header">
                                 <span className="chat-sender">{message.sender}</span>
-                                <span className="chat-time">{new Date(message.time).toLocaleTimeString()}</span>
+                                <span className="chat-time">{formatDateTime(message.time)}</span>
                             </div>
                             <div className="chat-text">{message.text}</div>
                         </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router'
 import { Button } from '../components/Button'
+import { formatDateTime } from '../utils/dateFormat'
 import '../styles/index.css'
 import '../styles/Chat.css'
 
@@ -24,19 +25,25 @@ export function DMPage() {
 	useEffect(() => {
 		if (!username || !isAuthenticated) return
 
-		fetch(`/api/dm/${username}`, {
-			headers: { 'Authorization': `Bearer ${token}` }
-		})
-			.then(res => res.json())
-			.then(data => {
-				if (data.success) {
-					setMessages(data.messages)
-				} else {
-					setError(data.error || 'Failed to load messages')
-				}
+		const loadMessages = () => {
+			fetch(`/api/dm/${username}`, {
+				headers: { 'Authorization': `Bearer ${token}` }
 			})
-			.catch(() => setError('Failed to connect to server'))
-			.finally(() => setLoading(false))
+				.then(res => res.json())
+				.then(data => {
+					if (data.success) {
+						setMessages(data.messages)
+						setLoading(false)
+					} else {
+						setError(data.error || 'Failed to load messages')
+					}
+				})
+				.catch(() => setError('Failed to connect to server'))
+		}
+
+		loadMessages()
+		const timer = setInterval(loadMessages, 3000)
+		return () => clearInterval(timer)
 	}, [username, isAuthenticated, token])
 
 	const sendDM = async () => {
@@ -103,7 +110,7 @@ export function DMPage() {
 						<div key={message.id} className="chat-message">
 							<div className="chat-message-header">
 								<span className="chat-sender">{message.sender}</span>
-								<span className="chat-time">{new Date(message.time).toLocaleTimeString()}</span>
+								<span className="chat-time">{formatDateTime(message.time)}</span>
 							</div>
 							<div className="chat-text">{message.text}</div>
 						</div>
