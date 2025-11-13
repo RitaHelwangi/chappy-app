@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import type { Request, Response } from 'express'
-import { QueryCommand } from '@aws-sdk/lib-dynamodb'
+import { QueryCommand, PutCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb'
 import { db, tableName } from '../data/dynamoDB.js'
+import { verifyToken } from '../middleware.js'
 
 const router = Router()
 
@@ -27,6 +28,65 @@ router.get('/', async (req: Request, res: Response) => {
 	} catch (error) {
 		console.error('Get channels error:', error)
 		return res.status(500).json({ success: false, error: 'Failed to get channels' })
+	}
+})
+
+router.post('/', verifyToken, async (req: Request, res: Response) => {
+	try {
+		const { name, isLocked } = req.body
+		
+		if (!name) {
+			return res.status(400).json({ success: false, error: 'Channel name is required' })
+		}
+
+		const channelId = `${Date.now()}`
+		
+		await db.send(new PutCommand({
+			TableName: tableName,
+			Item: {
+				pk: 'CHANNEL',
+				sk: channelId,
+				name: name,
+				isLocked: isLocked || false
+			}
+		}))
+
+		console.log(`Created channel: ${name} (ID: ${channelId})`)
+		
+		return res.json({ 
+			success: true, 
+			channel: { 
+				id: channelId, 
+				name, 
+				isLocked: isLocked || false 
+			} 
+		})
+
+	} catch (error) {
+		console.error('Create channel error:', error)
+		return res.status(500).json({ success: false, error: 'Failed to create channel' })
+	}
+})
+
+router.delete('/:channelId', verifyToken, async (req: Request, res: Response) => {
+	try {
+		const channelId = decodeURIComponent(req.params.channelId || '')
+		
+		await db.send(new DeleteCommand({
+			TableName: tableName,
+			Key: {
+				pk: 'CHANNEL',
+				sk: channelId
+			}
+		}))
+
+		console.log(`Deleted channel: ${channelId}`)
+		
+		return res.json({ success: true })
+
+	} catch (error) {
+		console.error('Delete channel error:', error)
+		return res.status(500).json({ success: false, error: 'Failed to delete channel' })
 	}
 })
 

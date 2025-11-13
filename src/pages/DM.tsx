@@ -108,11 +108,16 @@ export function DMPage() {
 				) : (
 					messages.map((message) => (
 						<div key={message.id} className="chat-message">
-							<div className="chat-message-header">
-								<span className="chat-sender">{message.sender}</span>
-								<span className="chat-time">{formatDateTime(message.time)}</span>
+							<div className="user-avatar">
+								{message.sender.charAt(0).toUpperCase()}
 							</div>
-							<div className="chat-text">{message.text}</div>
+							<div className="chat-message-content">
+								<div className="chat-message-header">
+									<span className="chat-sender">{message.sender}</span>
+									<span className="chat-time">{formatDateTime(message.time)}</span>
+								</div>
+								<div className="chat-text">{message.text}</div>
+							</div>
 						</div>
 					))
 				)}
