@@ -61,10 +61,16 @@ router.delete('/me', verifyToken, async (req: Request, res: Response) => {
 	try {
 		const username = (req as any).user.username
 
-		await db.send(new DeleteCommand({
-			TableName: tableName,
-			Key: { pk: `USER#${username}`, sk: 'PROFILE' }
-		}))
+		await Promise.all([
+			db.send(new DeleteCommand({
+				TableName: tableName,
+				Key: { pk: `USER#${username}`, sk: 'PROFILE' }
+			})),
+			db.send(new DeleteCommand({
+				TableName: tableName,
+				Key: { pk: 'USERS', sk: username }
+			}))
+		])
 
 		console.log(`Deleted user: ${username}`)
 		return res.json({ success: true })
